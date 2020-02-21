@@ -9,8 +9,6 @@ Bank *Bank_new(int numAccounts, int initialBalance) {
     for(int i = 0; i < numAccounts; ++i) {
         b->accounts[i] = Account_new(i, initialBalance);
     }
-    pthread_mutex_t lk = PTHREAD_MUTEX_INITIALIZER;
-    b->bankLock = lk;
     
     return b;
 }
@@ -39,20 +37,11 @@ void Bank_open(Bank *b) {
 
 void Bank_transfer(Bank *b, int from, int to, int amount) {
     // Uncomment line when race condition in Bank_test() has been resolved.
-    if (Bank_shouldTest(b)) Bank_createTester(b);
+    if(Bank_shouldTest(b)) Bank_test(b);
 
-    pthread_mutex_lock(&b->bankLock);
     if(Account_withdraw(b->accounts[from], amount)) {
         Account_deposit(b->accounts[to], amount);
     }
-    pthread_mutex_unlock(&b->bankLock);
-
-
-}
-
-void Bank_createTester(Bank *b){
-    pthread_t *bankTester = (pthread_t*)malloc(sizeof(pthread_t));
-    pthread_create(bankTester, NULL, Bank_test, b);
 }
 
 void *Bank_test(void *bank) {
@@ -79,6 +68,6 @@ void *Bank_test(void *bank) {
 }
 
 int Bank_shouldTest(Bank *b) {
-b->ntransacts++;
-return b->ntransacts % NTEST == 0;
+    b->ntransacts++;
+    return b->ntransacts % NTEST == 0;
 }

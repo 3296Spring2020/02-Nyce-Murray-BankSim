@@ -8,8 +8,10 @@
 typedef struct Account {
     int balance;
     int id;
+    int fundsneeded;
     pthread_t thread;
     pthread_mutex_t accountlock;
+    pthread_cond_t lowfunds;
 } Account;
 
 typedef struct Bank {
