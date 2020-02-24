@@ -25,20 +25,27 @@ void Account_deposit(Account *a, int amount)
     {
         pthread_cond_signal(&a->lowfunds);
     }
-    printf("Deposit to acc %d.\n", a->id);
+    printf("Deposited %d to acc %d.\n", amount, a->id);
     pthread_mutex_unlock(&a->accountlock);
 }
 
 int Account_withdraw(Account *a, int amount)
 {
+    pthread_mutex_lock(&a->accountlock);
+    while (a->balance < amount)
+    {
+        a->fundsneeded = amount;
+        pthread_cond_wait(&a->lowfunds, &a->accountlock);
+    }
     if (a->balance >= amount)
     {
         int newBalance = a->balance - amount;
         a->balance = newBalance;
         a->fundsneeded = 0;
-        printf("Withdraw from acc %d.\n", a->id);
+        printf("Withdrew %d from acc %d.\n", amount, a->id);
+        pthread_mutex_unlock(&a->accountlock);
         return 1;
     }
-    a->fundsneeded = amount;
-    return 0;
+    pthread_mutex_unlock(&a->accountlock);
+    return -1;
 }

@@ -62,13 +62,7 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
     // }
     // pthread_mutex_unlock(&b->bankLock);
     // printf("Bank lock acquired for transfer from %d to %d.\n", from, to);
-    pthread_mutex_lock(&b->accounts[from]->accountlock);
-    printf("Transfer initiated from acc %d to acc %d.\n", from, to);
-    while (!Account_withdraw(b->accounts[from], amount))
-    {
-        pthread_cond_wait(&b->accounts[from]->lowfunds, &b->accounts[from]->accountlock);
-    }
-    pthread_mutex_unlock(&b->accounts[from]->accountlock);
+    Account_withdraw(b->accounts[from], amount);
     Account_deposit(b->accounts[to], amount);
 }
 
