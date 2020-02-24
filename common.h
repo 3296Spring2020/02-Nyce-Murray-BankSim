@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct Account {
+typedef struct Account
+{
     int balance;
     int id;
     int fundsneeded;
@@ -14,16 +15,20 @@ typedef struct Account {
     pthread_cond_t lowfunds;
 } Account;
 
-typedef struct Bank {
+typedef struct Bank
+{
     int initialBalance;
     int numAccounts;
     long ntransacts;
     int ntransactsInProgress;
     Account **accounts;
     pthread_mutex_t bankLock;
+    pthread_cond_t testcond;
+    int testing;
 } Bank;
 
-typedef struct TransferThreadParameters {
+typedef struct TransferThreadParameters
+{
     Bank *b;
     int fromAccount;
     int maxAmount;
