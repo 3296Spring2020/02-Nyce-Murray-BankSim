@@ -18,28 +18,23 @@ void Account_destroy(Account *a) { free(a); }
 void Account_deposit(Account *a, int amount)
 {
     pthread_mutex_lock(&a->accountlock);
-    int newBalance = a->balance + amount;
-    a->balance = newBalance;
+    printf("Balance before deposit for acc %d:\t%d.\n", a->id, a->balance);
+    a->balance += amount;
     pthread_cond_signal(&a->lowfunds);
     printf("Deposited %d to acc %d.\n", amount, a->id);
+    printf("Balance after deposit for acc %d:\t%d.\n", a->id, a->balance);
     pthread_mutex_unlock(&a->accountlock);
 }
 
 int Account_withdraw(Account *a, int amount)
 {
-    pthread_mutex_lock(&a->accountlock);
-    while (a->balance < amount)
-    {
-        pthread_cond_wait(&a->lowfunds, &a->accountlock);
-    }
     if (a->balance >= amount)
     {
-        int newBalance = a->balance - amount;
-        a->balance = newBalance;
+        printf("Balance before withdraw for acc %d\t%d.\n", a->id, a->balance);
+        a->balance -= amount;
         printf("Withdrew %d from acc %d.\n", amount, a->id);
-        pthread_mutex_unlock(&a->accountlock);
+        printf("Balance after withdraw for acc %d\t%d.\n", a->id, a->balance);
         return 1;
     }
-    pthread_mutex_unlock(&a->accountlock);
     return -1;
 }

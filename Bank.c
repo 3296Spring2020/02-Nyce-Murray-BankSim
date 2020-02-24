@@ -51,9 +51,13 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
     {
         Bank_createTester(b);
     }
-
-    if (Account_withdraw(b->accounts[from], amount))
-        Account_deposit(b->accounts[to], amount);
+    pthread_mutex_lock(&b->accounts[from]->accountlock);
+    while (!Account_withdraw(b->accounts[from], amount))
+    {
+        pthread_cond_wait(&b->accounts[from]->lowfunds, &b->accounts[from]->accountlock);
+    }
+    Account_deposit(b->accounts[to], amount);
+    pthread_mutex_unlock(&b->accounts[from]->accountlock);
 }
 
 void Bank_createTester(Bank *b)
@@ -94,7 +98,6 @@ void *Bank_test(void *bank)
     {
         pthread_mutex_unlock(&b->accounts[i]->accountlock);
     }
-    pthread_mutex_unlock(&b->bankLock);
 }
 
 int Bank_shouldTest(Bank *b)
