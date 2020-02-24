@@ -58,7 +58,7 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
     pthread_mutex_unlock(&b->accounts[from]->accountlock);
     printf("Withdraw from acc %d.\n", from);
     Account_deposit(b->accounts[to], amount);
-    printf("Withdraw from acc %d.\n", to);
+    printf("Deposit to acc %d.\n", to);
 
     pthread_mutex_unlock(&b->bankLock);
 }

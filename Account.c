@@ -39,6 +39,4 @@ int Account_withdraw(Account *a, int amount)
     }
     a->fundsneeded = amount;
     return 0;
-    // TEST
-    // if(a->balance < 0) printf("NEGATIVE BALANCE\n");
 }
