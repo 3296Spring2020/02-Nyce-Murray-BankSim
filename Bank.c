@@ -50,7 +50,6 @@ void Bank_open(Bank *b)
 void Bank_transfer(Bank *b, int from, int to, int amount)
 {
     // Uncomment line when race condition in Bank_test() has been resolved.
-    printf("Transfer initiated from acc %d to acc %d.\n", from, to);
     if (Bank_shouldTest(b))
     {
         Bank_createTester(b);
@@ -64,14 +63,13 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
     // pthread_mutex_unlock(&b->bankLock);
     // printf("Bank lock acquired for transfer from %d to %d.\n", from, to);
     pthread_mutex_lock(&b->accounts[from]->accountlock);
+    printf("Transfer initiated from acc %d to acc %d.\n", from, to);
     while (!Account_withdraw(b->accounts[from], amount))
     {
         pthread_cond_wait(&b->accounts[from]->lowfunds, &b->accounts[from]->accountlock);
     }
     pthread_mutex_unlock(&b->accounts[from]->accountlock);
-    printf("Withdraw from acc %d.\n", from);
     Account_deposit(b->accounts[to], amount);
-    printf("Deposit to acc %d.\n", to);
 }
 
 void Bank_createTester(Bank *b)

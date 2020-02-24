@@ -25,6 +25,7 @@ void Account_deposit(Account *a, int amount)
     {
         pthread_cond_signal(&a->lowfunds);
     }
+    printf("Deposit to acc %d.\n", a->id);
     pthread_mutex_unlock(&a->accountlock);
 }
 
@@ -35,6 +36,7 @@ int Account_withdraw(Account *a, int amount)
         int newBalance = a->balance - amount;
         a->balance = newBalance;
         a->fundsneeded = 0;
+        printf("Withdraw from acc %d.\n", a->id);
         return 1;
     }
     a->fundsneeded = amount;
