@@ -48,18 +48,19 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
 {
     // Uncomment line when race condition in Bank_test() has been resolved.
     pthread_mutex_lock(&b->bankLock);
+    pthread_mutex_lock(&b->accounts[from]->testlock);
     if (Bank_shouldTest(b))
     {
         Bank_createTester(b);
     }
-    pthread_mutex_lock(&b->accounts[from]->testlock);
     pthread_mutex_unlock(&b->bankLock);
 
-    pthread_mutex_unlock(&b->accounts[from]->accountlock);
+    pthread_mutex_lock(&b->accounts[from]->accountlock);
     while (!Account_withdraw(b->accounts[from], amount))
     {
         pthread_cond_wait(&b->accounts[from]->lowfunds, &b->accounts[from]->accountlock);
     }
+    pthread_mutex_unlock(&b->accounts[from]->accountlock);
 
     Account_deposit(b->accounts[to], amount);
     pthread_mutex_unlock(&b->accounts[from]->testlock);
