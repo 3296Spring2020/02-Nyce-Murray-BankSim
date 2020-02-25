@@ -47,17 +47,20 @@ void Bank_open(Bank *b)
 void Bank_transfer(Bank *b, int from, int to, int amount)
 {
     // Uncomment line when race condition in Bank_test() has been resolved.
+    pthread_mutex_lock(&b->bankLock);
     if (Bank_shouldTest(b))
     {
         Bank_createTester(b);
     }
     pthread_mutex_lock(&b->accounts[from]->testlock);
-    pthread_mutex_lock(&b->accounts[from]->accountlock);
+    pthread_mutex_unlock(&b->bankLock);
+
+    pthread_mutex_unlock(&b->accounts[from]->accountlock);
     while (!Account_withdraw(b->accounts[from], amount))
     {
         pthread_cond_wait(&b->accounts[from]->lowfunds, &b->accounts[from]->accountlock);
     }
-    pthread_mutex_unlock(&b->accounts[from]->accountlock);
+
     Account_deposit(b->accounts[to], amount);
     pthread_mutex_unlock(&b->accounts[from]->testlock);
 }
@@ -74,10 +77,11 @@ void *Bank_test(void *bank)
     int sum = 0;
 
     // critical section
+    pthread_mutex_lock(&b->bankLock);
     printf("Attempting to obtain locks on accounts.\n");
     for (int i = 0; i < b->numAccounts; ++i)
     {
-        printf("Trying lock\t%d.\n", i);
+        printf("Trying lock\t\t\t%d.\n", i);
         pthread_mutex_lock(&b->accounts[i]->testlock);
         printf("Obtained lock on account\t%d.\n", i);
     }
@@ -103,6 +107,7 @@ void *Bank_test(void *bank)
     {
         pthread_mutex_unlock(&b->accounts[i]->testlock);
     }
+    pthread_mutex_unlock(&b->bankLock);
 }
 
 int Bank_shouldTest(Bank *b)

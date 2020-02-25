@@ -32,8 +32,8 @@ int Account_withdraw(Account *a, int amount)
     {
         a->balance -= amount;
         printf("Withdrew %d from acc %d.\n", amount, a->id);
-        pthread_mutex_unlock(&a->accountlock);
         return 1;
     }
+
     return -1;
 }
