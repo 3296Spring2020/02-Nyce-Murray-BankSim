@@ -11,15 +11,18 @@ TransferThreadParameters *TransferThreadParameters_new(Bank *b, int fromAccount,
 void *transfer_thread(void *vargp) {
     TransferThreadParameters *param = (TransferThreadParameters *)vargp;
     Bank *b = param->b;
-    int fromAccount = param->fromAccount;
+    //int fromAccount = param->fromAccount;
     int maxAmount = param->maxAmount;
+    //printf("Thread created for account %d.\n", fromAccount);
     free(param);
-    
-    for(int i = 0; i < 10000; ++i) {
+
+    for (int i = 0; i < 10000; ++i)
+    {
+        int fromAccount = (int)(rand() % b->numAccounts);
         int toAccount = (int)(rand() % b->numAccounts);
         int amount = (int)(rand() % maxAmount);
         Bank_transfer(b, fromAccount, toAccount, amount);
     }
 
-    printf("Account[%d] is done.\n", fromAccount);
+    //printf("Account[%d] is done.\n", fromAccount);
 }

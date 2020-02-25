@@ -46,7 +46,7 @@ void Bank_transfer(Bank *b, int from, int to, int amount) {
         Account_deposit(b->accounts[to], amount);
     }
     pthread_mutex_unlock(&b->bankLock);
-
+ 
 
 }
 
@@ -58,7 +58,6 @@ void Bank_createTester(Bank *b){
 void *Bank_test(void *bank) {
     Bank *b = (Bank*) bank;
     int sum = 0;
-
     // critical section
     pthread_mutex_lock(&b->bankLock);
     for(int i = 0; i < b->numAccounts; ++i) {
@@ -79,6 +78,6 @@ void *Bank_test(void *bank) {
 }
 
 int Bank_shouldTest(Bank *b) {
-b->ntransacts++;
-return b->ntransacts % NTEST == 0;
+    b->ntransacts++;
+    return b->ntransacts % NTEST == 0;
 }
