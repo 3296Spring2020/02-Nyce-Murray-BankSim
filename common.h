@@ -5,16 +5,18 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct Account {
+typedef struct Account
+{
     int balance;
     int id;
-    int fundsneeded;
     pthread_t thread;
     pthread_mutex_t accountlock;
+    pthread_mutex_t testlock;
     pthread_cond_t lowfunds;
 } Account;
 
-typedef struct Bank {
+typedef struct Bank
+{
     int initialBalance;
     int numAccounts;
     long ntransacts;
@@ -23,7 +25,8 @@ typedef struct Bank {
     pthread_mutex_t bankLock;
 } Bank;
 
-typedef struct TransferThreadParameters {
+typedef struct TransferThreadParameters
+{
     Bank *b;
     int fromAccount;
     int maxAmount;
