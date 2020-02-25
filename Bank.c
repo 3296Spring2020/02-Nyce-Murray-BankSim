@@ -54,6 +54,7 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
         Bank_createTester(b);
     }
     pthread_mutex_unlock(&b->bankLock);
+<<<<<<< HEAD
 
     pthread_mutex_lock(&b->accounts[from]->accountlock);
     while (!Account_withdraw(b->accounts[from], amount))
@@ -61,6 +62,9 @@ void Bank_transfer(Bank *b, int from, int to, int amount)
         pthread_cond_wait(&b->accounts[from]->lowfunds, &b->accounts[from]->accountlock);
     }
     pthread_mutex_unlock(&b->accounts[from]->accountlock);
+=======
+ 
+>>>>>>> c06064b1d849c3dd9ad84550f35026e577293f6b
 
     Account_deposit(b->accounts[to], amount);
     pthread_mutex_unlock(&b->accounts[from]->testlock);
@@ -76,7 +80,6 @@ void *Bank_test(void *bank)
 {
     Bank *b = (Bank *)bank;
     int sum = 0;
-
     // critical section
     pthread_mutex_lock(&b->bankLock);
     printf("Attempting to obtain locks on accounts.\n");
@@ -111,8 +114,12 @@ void *Bank_test(void *bank)
     pthread_mutex_unlock(&b->bankLock);
 }
 
+<<<<<<< HEAD
 int Bank_shouldTest(Bank *b)
 {
+=======
+int Bank_shouldTest(Bank *b) {
+>>>>>>> c06064b1d849c3dd9ad84550f35026e577293f6b
     b->ntransacts++;
     return b->ntransacts % NTEST == 0;
 }
