@@ -21,5 +21,8 @@ void *transfer_thread(void *vargp) {
         Bank_transfer(b, fromAccount, toAccount, amount);
     }
 
+    //TASK 5
+    Bank_test(b);
+
     printf("Account[%d] is done.\n", fromAccount);
 }
