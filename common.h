@@ -11,6 +11,7 @@ typedef struct Account
     int id;
     pthread_t thread;
     pthread_mutex_t accountlock;
+    pthread_mutex_t testlock;
     pthread_cond_t lowfunds;
 } Account;
 
